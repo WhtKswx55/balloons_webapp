@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заказ шаров 🎈</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            margin: 0;
+        }
+        h1 {
+            text-align: center;
+            color: var(--tg-theme-header-color);
+        }
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--tg-theme-hint-color);
+            background: var(--tg-theme-secondary-bg-color);
+            color: var(--tg-theme-text-color);
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .close-btn {
+            background: var(--tg-theme-destructive-text-color);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Заказ шаров</h1>
+    <p>Заполните форму и отправьте заказ!</p>
+
+    <label for="name">Ваше имя:</label>
+    <input type="text" id="name" placeholder="Иван Иванов">
+
+    <label for="quantity">Количество шаров:</label>
+    <input type="number" id="quantity" min="1" value="1">
+
+    <label for="type">Тип шаров:</label>
+    <select id="type">
+        <option value="гелиевые">Гелиевые</option>
+        <option value="обычные">Обычные</option>
+        <option value="с рисунком">С рисунком</option>
+        <option value="фигурные">Фигурные</option>
+    </select>
+
+    <button id="send">Отправить заказ</button>
+    <button class="close-btn" id="close">Закрыть без заказа</button>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+
+        tg.ready();
+        tg.expand();  // Развернуть на полный экран
+
+        // Основная кнопка Telegram (опционально)
+        tg.MainButton.text = "Отправить заказ";
+        tg.MainButton.show();
+        tg.MainButton.onClick(() => document.getElementById('send').click());
+
+        document.getElementById('send').addEventListener('click', () => {
+            const name = document.getElementById('name').value.trim();
+            const quantity = document.getElementById('quantity').value;
+            const type = document.getElementById('type').value;
+
+            if (!name || !quantity) {
+                tg.showAlert("Заполните имя и количество!");
+                return;
+            }
+
+            const orderData = {
+                name: name,
+                quantity: parseInt(quantity),
+                type: type,
+                timestamp: new Date().toISOString()
+            };
+
+            // Отправляем данные в бот
+            tg.sendData(JSON.stringify(orderData));
+
+            // Опционально: закрыть после отправки
+            // tg.close();
+        });
+
+        document.getElementById('close').addEventListener('click', () => {
+            tg.close();
+        });
+    </script>
+</body>
+</html>
